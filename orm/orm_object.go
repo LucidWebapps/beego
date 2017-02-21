@@ -31,6 +31,8 @@ var _ Inserter = new(insertSet)
 
 // insert model ignore it's registered or not.
 func (o *insertSet) Insert(md interface{}) (int64, error) {
+	fmt.Println("\n******Insert Init\n")
+
 	if o.closed {
 		return 0, ErrStmtClosed
 	}
@@ -38,6 +40,9 @@ func (o *insertSet) Insert(md interface{}) (int64, error) {
 	ind := reflect.Indirect(val)
 	typ := ind.Type()
 	name := getFullName(typ)
+
+	fmt.Println("\n******Ready to insert", val, "|", ind, "|", typ, "|", name, "\n")
+
 	if val.Kind() != reflect.Ptr {
 		panic(fmt.Errorf("<Inserter.Insert> cannot use non-ptr model struct `%s`", name))
 	}

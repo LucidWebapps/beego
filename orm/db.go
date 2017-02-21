@@ -364,6 +364,9 @@ func (d *dbBase) Read(q dbQuerier, mi *modelInfo, ind reflect.Value, tz *time.Lo
 		}
 		return err
 	}
+
+	fmt.Println("\n$$$$$$$$$QueryRow:", row, "\n===mi:", mi, "\n===Query:", query, "\n===Args:", args, "\n===Refs:", refs)
+
 	elm := reflect.New(mi.addrField.Elem().Type())
 	mind := reflect.Indirect(elm)
 	d.setColsValues(mi, &mind, mi.fields.dbcols, refs, tz)
@@ -373,8 +376,11 @@ func (d *dbBase) Read(q dbQuerier, mi *modelInfo, ind reflect.Value, tz *time.Lo
 
 // execute insert sql dbQuerier with given struct reflect.Value.
 func (d *dbBase) Insert(q dbQuerier, mi *modelInfo, ind reflect.Value, tz *time.Location) (int64, error) {
+	//fmt.Println("\n******DB Insert Init\n")
 	names := make([]string, 0, len(mi.fields.dbcols))
 	values, autoFields, err := d.collectValues(mi, ind, mi.fields.dbcols, false, true, &names, tz)
+	//fmt.Println("\n******Ready to Collect \n--mi:", mi, "\n--ind:", ind, mi.fields.dbcols, "\n--names:", names, "\n")
+	//fmt.Println("\n******Ready to Insert", values, "|", autoFields, "\n")
 	if err != nil {
 		return 0, err
 	}
@@ -476,7 +482,9 @@ func (d *dbBase) InsertValue(q dbQuerier, mi *modelInfo, isMulti bool, names []s
 
 	query := fmt.Sprintf("INSERT INTO %s%s%s (%s%s%s) VALUES (%s)", Q, mi.table, Q, Q, columns, Q, qmarks)
 
+	fmt.Println(">Insert Query:", query)
 	d.ins.ReplaceMarks(&query)
+	fmt.Println(">>>Insert Query:", query)
 
 	if isMulti || !d.ins.HasReturningID(mi, &query) {
 		res, err := q.Exec(query, values...)
@@ -1338,6 +1346,10 @@ setValue:
 			value = v
 		}
 	case fieldType&IsRelField > 0:
+		fmt.Println("\n---fi:", fi)
+		fmt.Println("---relModelInfo:", fi.relModelInfo)
+		fmt.Println("---fields:", fi.relModelInfo.fields)
+		fmt.Println("---pk:", fi.relModelInfo.fields.pk)
 		fi = fi.relModelInfo.fields.pk
 		fieldType = fi.fieldType
 		goto setValue
@@ -1383,7 +1395,7 @@ setValue:
 				field.SetBool(value.(bool))
 			}
 		}
-	case fieldType == TypeCharField || fieldType == TypeTextField || fieldType == TypeJSONField || fieldType == TypeJsonbField:
+	case fieldType == TypeCharField || fieldType == TypeTextField || fieldType == TypeJSONField || fieldType == TypeJsonbField || fieldType == TypeUUIDField:
 		if isNative {
 			if ns, ok := field.Interface().(sql.NullString); ok {
 				if value == nil {

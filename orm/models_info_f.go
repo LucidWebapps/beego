@@ -246,6 +246,9 @@ checkType:
 		}
 		if fieldType == TypeCharField {
 			switch tags["type"] {
+			case "uuid":
+				fmt.Println("GOT TYPE UUID")
+				fieldType = TypeUUIDField
 			case "text":
 				fieldType = TypeTextField
 			case "json":

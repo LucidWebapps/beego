@@ -106,6 +106,14 @@ checkColumn:
 			goto checkColumn
 		}
 		col = T["jsonb"]
+
+	case TypeUUIDField:
+		if al.Driver != DRPostgres {
+			fieldType = TypeCharField
+			goto checkColumn
+		}
+		col = T["uuid"]
+
 	case RelForeignKey, RelOneToOne:
 		fieldType = fi.relModelInfo.fields.pk.fieldType
 		fieldSize = fi.relModelInfo.fields.pk.size
@@ -282,7 +290,7 @@ func getColumnDefault(fi *fieldInfo) string {
 
 	// These defaults will be useful if there no config value orm:"default" and NOT NULL is on
 	switch fi.fieldType {
-	case TypeTimeField, TypeDateField, TypeDateTimeField, TypeTextField:
+	case TypeTimeField, TypeDateField, TypeDateTimeField, TypeTextField, TypeUUIDField:
 		return v
 
 	case TypeBitField, TypeSmallIntegerField, TypeIntegerField,

@@ -40,6 +40,8 @@ const (
 	TypeDecimalField
 	TypeJSONField
 	TypeJsonbField
+	TypeUUIDField
+
 	RelForeignKey
 	RelOneToOne
 	RelManyToMany
@@ -690,6 +692,7 @@ func (e *TextField) RawValue() interface{} {
 // verify TextField implement Fielder
 var _ Fielder = new(TextField)
 
+
 // JSONField postgres json field.
 type JSONField string
 
@@ -773,3 +776,47 @@ func (j *JsonbField) RawValue() interface{} {
 
 // verify JsonbField implement Fielder
 var _ Fielder = new(JsonbField)
+
+
+// UUIDtField A uuid field.
+type UUIDField string
+
+// Value return TextField value
+func (e UUIDField) Value() string {
+	return string(e)
+}
+
+// Set the TextField value
+func (e *UUIDField) Set(d string) {
+	fmt.Println("UUIDField Set ", d, "\n")
+	*e = UUIDField(d)
+}
+
+// String convert TextField to string
+func (e *UUIDField) String() string {
+	return e.Value()
+}
+
+// FieldType return enum type
+func (e *UUIDField) FieldType() int {
+	return TypeUUIDField
+}
+
+// SetRaw convert interface string to string
+func (e *UUIDField) SetRaw(value interface{}) error {
+	switch d := value.(type) {
+	case string:
+		e.Set(d)
+	default:
+		return fmt.Errorf("<UUIDField.SetRaw> unknown value `%s`", value)
+	}
+	return nil
+}
+
+// RawValue return TextField value
+func (e *UUIDField) RawValue() interface{} {
+	return e.Value()
+}
+
+// verify TextField implement Fielder
+var _ Fielder = new(UUIDField)

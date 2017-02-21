@@ -58,6 +58,7 @@ var postgresTypes = map[string]string{
 	"float64-decimal": "numeric(%d, %d)",
 	"json":            "json",
 	"jsonb":           "jsonb",
+	"uuid":		   "uuid",	//"uuid USING uuid_generate_v4()",
 }
 
 // postgresql dbBaser.

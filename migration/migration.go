@@ -35,6 +35,7 @@ import (
 
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
+	"fmt"
 )
 
 // const the data format for the bee generate migration datatype

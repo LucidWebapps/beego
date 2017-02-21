@@ -29,6 +29,7 @@ type rawPrepare struct {
 }
 
 func (o *rawPrepare) Exec(args ...interface{}) (sql.Result, error) {
+	fmt.Println("\n%%%%%%%Ready to rawPrepare.Exec:", args)
 	if o.closed {
 		return nil, ErrStmtClosed
 	}
@@ -80,6 +81,8 @@ func (o *rawSet) Exec() (sql.Result, error) {
 	o.orm.alias.DbBaser.ReplaceMarks(&query)
 
 	args := getFlatParams(nil, o.args, o.orm.alias.TZ)
+	fmt.Println("\n%%%%%%%Ready to Exec:", query, args)
+
 	return o.orm.db.Exec(query, args...)
 }
 
@@ -255,6 +258,7 @@ func (o *rawSet) loopSetRefs(refs []interface{}, sInds []reflect.Value, nIndsPtr
 
 // query data and map to container
 func (o *rawSet) QueryRow(containers ...interface{}) error {
+	fmt.Println("\n&&&&&&&&& rawSet.QueryRow Init,", containers)
 	var (
 		refs  = make([]interface{}, 0, len(containers))
 		sInds []reflect.Value
